@@ -11,6 +11,8 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import app.movie.android.com.popularmovie.BuildConfig;
+
 
 /**
  * Created by Profit3 on 21/11/2015.
@@ -20,7 +22,7 @@ public class RequestHandler {
     // These two need to be declared outside the try/catch
     // so that they can be closed in the finally block.
 
-    private static String APPID = "21c3b2d7d354b627905deac9d7d37bb1";
+    private static String APPID = BuildConfig.POULAR_MOVIE_API_KEY;
     public static final String BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
     public static final String MOVIE_OPERATION_BASE_URL = "https://api.themoviedb.org/3/movie";
 
@@ -39,7 +41,6 @@ public class RequestHandler {
 
     public static String getUrlForMovieReviewsBOrVideosByMovieId(String movieId, String key) {
         Uri buildURL = Uri.parse(MOVIE_OPERATION_BASE_URL).buildUpon().appendPath(movieId).appendPath(key).appendQueryParameter(API_KEY_PARAM, APPID).build();
-//https://api.themoviedb.org/3/movie/140607/reviews?api_key=appkey
         System.out.println("current " + key + " url=" + buildURL.toString());
         return buildURL.toString();
     }
@@ -50,10 +51,7 @@ public class RequestHandler {
         // Will contain the raw JSON response as a string.
         String moviesJsonStr = "";
         try {
-            //    System.out.println("baseURL="+baseUrl);
             URL url = new URL(baseUrl);
-            //URLConnection connection = url.openConnection();
-            // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpsURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 // Send post request
@@ -68,10 +66,6 @@ public class RequestHandler {
             reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {
-                // System.out.println("line="+line);
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
                 buffer.append(line + "\n");
             }
             if (buffer.length() == 0) {
