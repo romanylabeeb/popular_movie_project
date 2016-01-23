@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PopularMovie</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_details">DetailsActivity</string>
+
+
+    <!-- for perefernces-->
+    <string name="pref_sort_title" transable="false">Sort By</string>
+    <string name="pref_sort_list_key" transable="false">Sorting</string>
+
+
+    <string name="pref_most_popular_option" transable="false">most popular</string>
+    <string name="pref_highest_rated_option" transable="false">highest-rated</string>
+    <string name="pref_favorite_option" transable="false">favorites</string>
+
+    <string name="pref_most_popular_value" transable="false">popularity.desc</string>
+    <string name="pref_highest_rated_value" transable="false">vote_average.desc</string>
+    <string name="pref_default_sort_value" transable="false">@string/pref_most_popular_value</string>
+
+    <string-array name="pref_sort_list_options" >
+        <item name="pref_most_popular" >@string/pref_most_popular_option</item>
+        <item name="pref_highest_rated">@string/pref_highest_rated_option</item>
+        <item name="pref_favorite">@string/pref_favorite_option</item>
+    </string-array>
+
+    <string-array name="pref_sort_list_values" >
+        <item name="pref_most_popular" >@string/pref_most_popular_value</item>
+        <item name="pref_highest_rated">@string/pref_highest_rated_value</item>
+        <item name="pref_favorite">@string/pref_favorite_option</item>
+    </string-array>
+
+</resources>
