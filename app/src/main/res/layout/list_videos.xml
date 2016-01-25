@@ -13,8 +13,6 @@
         android:layout_height="wrap_content"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:maxHeight="150dp"
-        android:maxWidth="100dp"
         android:src="@drawable/play_ico" />
 
 
@@ -23,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:paddingTop="10dp"
         android:textColor="#504f4f"
         android:textSize="20sp"

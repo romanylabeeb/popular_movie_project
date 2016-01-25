@@ -17,7 +17,7 @@ import app.movie.android.com.popularmovie.customizedadapter.MovieBaseAdapter;
  * Created by Romany on 1/2/2016.
  */
 public abstract class BaseFetchMovieTask extends AsyncTask<String, Void, List<?>> {
-    private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+    private final String LOG_TAG = BaseFetchMovieTask.class.getSimpleName();
     public static final String JSON_ARRAY_RESULTS = "results";
     public final static RequestHandler appConnection = new RequestHandler();
     public final static Gson GSON_MAPPER = new Gson();
@@ -33,15 +33,18 @@ public abstract class BaseFetchMovieTask extends AsyncTask<String, Void, List<?>
     @Override
     protected List<?> doInBackground(String... params) {
         String jsonResponse = this.appConnection.getResponseByUrl(this.url);
+        // String jsonResponse = "";
         try {
             if (null != jsonResponse) {
                 System.out.println("url=:" + this.url);
                 return this.getResultListByMapJsonToObjectDto(jsonResponse);
             } else {
                 Log.e(LOG_TAG, "Error no connection");
+                // return this.getResultListByMapJsonToObjectDto("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
+
         }
         return null;
     }

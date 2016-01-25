@@ -6,8 +6,6 @@ package app.movie.android.com.popularmovie.activities.details;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,11 +51,14 @@ public class DetailsFragment extends Fragment {
     private ImageView poster, backGroundImg;
     private TextView title, overView, releaseDate;
     private RatingBar rating;
-    private static ScrollView scrollView;
+    private ScrollView scrollView;
     private View rootView;
-    //public static boolean showDetail;
 
     public DetailsFragment() {
+    }
+
+    public static MovieDTO getMovieDetailDTO() {
+        return movieDetail;
     }
 
     public void setMovieDto(MovieDTO movieDto) {
@@ -66,8 +67,11 @@ public class DetailsFragment extends Fragment {
     }
 
     public static void hideMovieDetail() {
-        //scrollView.setVisibility(View.INVISIBLE);
         movieDetail = null;
+    }
+
+    public static boolean isMovieDetailShown() {
+        return null != movieDetail;
     }
 
     @Override
@@ -103,12 +107,12 @@ public class DetailsFragment extends Fragment {
             this.showMovieDetail();
             this.handleVideoAction(videoListView);
 //for favourite button
-            this.handleFavoriteButtonAction(btnFavourite);
+            this.btnFavoriteAction(btnFavourite);
         }
 
     }
 
-    private void handleFavoriteButtonAction(final Button btnFavourite) {
+    private void btnFavoriteAction(final Button btnFavourite) {
         btnFavourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,7 +123,7 @@ public class DetailsFragment extends Fragment {
                     MainActivity.movieDBHelper.deleteFavouriteMovie(movieDetail.getId());
                     movieDetail.setFavorite(0);
                 }
-                PopularMoviesFragment.notifyChangeMovieStatus(movieDetail.getId(), movieDetail.isFavorite());
+                PopularMoviesFragment.notifyChangeMovieFavoriteStatus(movieDetail,movieDetail.isFavorite());
                 validateFavouriteButton(movieDetail.getId(), btnFavourite);
             }
         });
@@ -143,7 +147,7 @@ public class DetailsFragment extends Fragment {
         this.loadExternalMovieDetails(btnFavourite);
         this.validateFavouriteButton(this.movieDetail.getId(), btnFavourite);
         this.loadMovieBasicDetails();
-        this.movieDetail.setFavorite(MainActivity.movieDBHelper.isFavouriteMovie(this.movieDetail.getId()) ? 1 : 0);
+     //   this.movieDetail.setFavorite(MainActivity.movieDBHelper.isFavouriteMovie(this.movieDetail.getId()) ? 1 : 0);
     }
 
     private ExpandableHeightListView initiateDetailListView(View rootView, MovieBaseAdapter adapter, int listViewId) {
@@ -166,13 +170,9 @@ public class DetailsFragment extends Fragment {
         if (!isFavouriteMovie) {
             btnFavourite.setBackgroundResource(R.drawable.add);
         } else {
-            this.makeBtnIsFavourite(btnFavourite);
+            btnFavourite.setBackgroundResource(R.drawable.remove);
             btnFavourite.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void makeBtnIsFavourite(Button btn) {
-        btnFavourite.setBackgroundResource(R.drawable.remove);
     }
 
     private void loadExternalMovieDetails(Button btnFavourite) {
@@ -203,7 +203,7 @@ public class DetailsFragment extends Fragment {
 
         title.setText(movieDetail.getTitle());
         overView.setText(movieDetail.getOverView());
-        rating.setRating((float) movieDetail.getVoteRate() / 2.0f);
+        rating.setRating((float) movieDetail.getVoteRate() * 1.0f);
         releaseDate.setText(movieDetail.getReleaseDate());
     }
 
@@ -211,6 +211,16 @@ public class DetailsFragment extends Fragment {
         Picasso.with(getActivity()).load(imgUrl)
                 .fit()
                 .into(imgView);
+
+    }
+
+    public static void showDefaultMovieDetailIfNoMovieIsShown(MovieDTO movieDTO) {
+        if (null == movieDTO) {
+            Log.i(LOG_TAG, "here movie is null");
+            movieDetail = movieDTO;
+            PopularMoviesFragment.notifyGridViewAndAdapter();
+
+        }
 
     }
 }

@@ -1,18 +1,16 @@
 package app.movie.android.com.popularmovie.activities.main;
 
 import android.app.Fragment;
-
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.widget.AdapterView.OnItemClickListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,8 +30,21 @@ public class PopularMoviesFragment extends Fragment {
     public static final String LOG_TAG = PopularMoviesFragment.class.getSimpleName();
     private static MoviesAdapter moviesAdapter;
     private static MoviesDTO moviesDTO;
-    public static String SORT_KEY = "";
+    private static String SORT_KEY = "";
+    private static String FAVORITE_KEY = "favorites";
+    private TextView sortKeyTitle;
     private static GridView gridView;
+
+    public void setSortKeyTitle(String sortKeyTitleStr) {
+        if (sortKeyTitleStr.equalsIgnoreCase(FAVORITE_KEY)) {
+            sortKeyTitleStr = "Sort by Your Favorites Movies";
+        } else if (sortKeyTitleStr.equalsIgnoreCase(getString(R.string.pref_most_popular_value))) {
+            sortKeyTitleStr = "Sort by Your Most Populare Movies";
+        } else if (sortKeyTitleStr.equalsIgnoreCase(getString(R.string.pref_highest_rated_value))) {
+            sortKeyTitleStr = "Sort by Your Most Highest Rated Movies";
+        }
+        this.sortKeyTitle.setText(sortKeyTitleStr);
+    }
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -65,31 +76,65 @@ public class PopularMoviesFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    public static void notifyChangeMovieStatus(int movieId, boolean newMovieStatus) {
+    public static void notifyChangeMovieFavoriteStatus(MovieDTO movieDetail, boolean isFavorite) {
+        showToastForMovieStatus(movieDetail.getTitle(), movieDetail.isFavorite());
+        int i = 0;
         for (MovieDTO movie : moviesDTO.getMovies()) {
-            if (movie.getId() == movieId) {
-                int favoritStatus = (newMovieStatus ? 1 : 0);
-                movie.setFavorite(favoritStatus);
-                Log.i(LOG_TAG, "here in change movie status");
+            if (movie.getId() == movieDetail.getId()) {
+                if (SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
+                    removeOrAddMovieToAdapterByNewStatus(movieDetail, i);
+                    break;
+                } else {
+                    Log.i(LOG_TAG, "the old title=" + movie.getTitle());
+                    Log.i(LOG_TAG, "the old stat=" + isFavorite);
+
+                    changeMovieStatusInAdapter(movie, isFavorite);
+
+                }
                 break;
             }
+            i++;
         }
+        notifyGridViewAndAdapter();
+    }
 
+    private static void showToastForMovieStatus(String movieTitle, boolean newMovieStatus) {
+        String toastMessage = movieTitle + " Removed From your favorites movies";
+        if (newMovieStatus) {
+            toastMessage = movieTitle + " Is Added to your favorites movies";
+        }
+        int duration = Toast.LENGTH_SHORT;
+        Toast.makeText(MainActivity.getContext(), toastMessage, duration).show();
+    }
+
+    private static void changeMovieStatusInAdapter(MovieDTO movieDetail, boolean isFavorite) {
+        int favoriteStatus = (isFavorite ? 1 : 0);
         moviesAdapter.setNotifyOnChange(true);
         gridView.setAdapter(moviesAdapter);
+        movieDetail.setFavorite(favoriteStatus);
+    }
+
+    private static void removeOrAddMovieToAdapterByNewStatus(MovieDTO movieDetail, int selectedMovieIndex) {
+        int prevIndex = selectedMovieIndex > 0 ? selectedMovieIndex - 1 : 0;
+        if (!movieDetail.isFavorite()) {
+            moviesAdapter.remove(moviesAdapter.getItem(selectedMovieIndex));
+
+            reloadMovieDetailsFromAdapterByIndex(prevIndex);
+        } else {
+            moviesAdapter.add(movieDetail);
+        }
+    }
+
+    public static void notifyGridViewAndAdapter() {
+        moviesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        gridView = this.getGridViewByRootView(rootView);
-        this.defineGridViewSelectItemAction(gridView);
-
-        // add scroll action listener
-        gridView.setOnScrollListener(new EndlessScrollListener());
-
-
+        GridView gridView = this.getGridViewByRootView(rootView);
+        sortKeyTitle = (TextView) rootView.findViewById(R.id.txtSortKey);
         return rootView;
     }
 
@@ -98,46 +143,59 @@ public class PopularMoviesFragment extends Fragment {
                 new MoviesAdapter(
                         getActivity(),
                         R.layout.list_movies, new ArrayList<Object>());
-        GridView gridView = (GridView) rootView.findViewById(R.id.list_view_movies);
-
+        gridView = (GridView) rootView.findViewById(R.id.list_view_movies);
         gridView.setAdapter(moviesAdapter);
-        //add selected item action
+        //add action listener for selected  item
+        this.defineGridViewSelectItemAction(gridView);
+        // add scroll action listener
+        gridView.setOnScrollListener(new EndlessScrollListener());
         return gridView;
     }
 
+
     private void defineGridViewSelectItemAction(GridView gridView) {
-        Log.i(LOG_TAG, "on defineGridViewSelectItemAction");
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(LOG_TAG, "on defineGridViewSelectItemAction");
-                Log.i(LOG_TAG, "on setOnItemClickListener");
-                MovieDTO movieDTO = (MovieDTO) moviesAdapter.getItem(position);
-                ((Callback) getActivity()).onItemSelected(movieDTO);
-
+                Log.i(LOG_TAG, "on setOnItemClickListener position=" + position);
+                moviesAdapter.setSelectedPosition(position);
+                notifyGridViewAndAdapter();
+                showSelectedMovieDetails((MovieDTO) moviesAdapter.getItem(position));
             }
         });
     }
 
+    public static void showSelectedMovieDetails(MovieDTO selectedMovie) {
+        ((Callback) MainActivity.getContext()).onItemSelected(selectedMovie);
+    }
+
+    public static void showMovieDefaultMovieDetailIfHiddenInTablet(MovieDTO movieDTO) {
+        if (MainActivity.ismTwoPane() && !DetailsFragment.isMovieDetailShown()) {
+            showSelectedMovieDetails(movieDTO);
+        }
+    }
 
     public void getMoviesDtoAndGetSortKeyFromSharedPreferences() {
         Log.i(LOG_TAG, "on getMoviesDtoAndGetSortKeyFromSharedPreferences");
         if (null == this.moviesDTO) {
             this.moviesDTO = new MoviesDTO();
         }
+
         String newSortKey = Utility.getSortKey(getActivity());
+        this.setSortKeyTitle(newSortKey);
         if (!this.SORT_KEY.equalsIgnoreCase(newSortKey)) {
-            DetailsFragment.hideMovieDetail();
             this.SORT_KEY = newSortKey;
             this.moviesDTO.getMovies().clear();
             this.moviesDTO.initDefaultInstanceValues();
-            if (!this.SORT_KEY.equalsIgnoreCase("favorites")) {
+            if (!this.SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
                 loadPopularMovies();
             }
         }
-        if (this.SORT_KEY.equalsIgnoreCase("favorites")) {
+        if (this.SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
             this.loadDataFromDataBase();
         }
+
+
     }
 
     private void loadPopularMovies() {
@@ -155,8 +213,19 @@ public class PopularMoviesFragment extends Fragment {
         this.moviesDTO.setMovies(result);
         moviesAdapter.clear();
         moviesAdapter.addAll(result);
+        reloadMovieDetailsFromAdapterByIndex(0);
+
     }
 
+    private static void reloadMovieDetailsFromAdapterByIndex(int index) {
+        if (MainActivity.ismTwoPane()) {
+            if (moviesAdapter.getCount() >= index) {
+                showSelectedMovieDetails((MovieDTO) moviesAdapter.getItem(index));
+            } else {
+                DetailsFragment.hideMovieDetail();
+            }
+        }
+    }
 
     public class EndlessScrollListener implements AbsListView.OnScrollListener {
         public EndlessScrollListener() {

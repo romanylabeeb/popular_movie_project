@@ -1,19 +1,14 @@
 package app.movie.android.com.popularmovie.activities.main;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.gson.Gson;
-
 import app.movie.android.com.popularmovie.R;
-import app.movie.android.com.popularmovie.Utilities.Utility;
 import app.movie.android.com.popularmovie.activities.details.DetailsActivity;
 import app.movie.android.com.popularmovie.activities.details.DetailsFragment;
 import app.movie.android.com.popularmovie.activities.settings.SettingsActivity;
@@ -25,27 +20,30 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
-    private boolean mTwoPane;
+    private static boolean mTwoPane;
+    private static Context context;
+
+    public static boolean ismTwoPane() {
+        return mTwoPane;
+    }
+
+    public static Context getContext() {
+        return context;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        context = this;
         super.onCreate(savedInstanceState);
         movieDBHelper = new MovieDbHelper(getApplicationContext());
         setContentView(R.layout.activity_main);
-//        if (savedInstanceState == null) {
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.container, new PopularMoviesFragment())
-//                    .commit();
-//
-//        }
+//        Picasso
+//                .with(this)
+//                .setIndicatorsEnabled(true);
+        // StatsSnapshot picassoStats = Picasso.with(this).getSnapshot();
+        //   Log.d("Picasso Stats", picassoStats.toString());
         if (findViewById(R.id.movie_detail_container) != null) {
-            // The detail container view will be present only in the large-screen layouts
-            // (res/layout-sw600dp). If this view is present, then the activity should be
-            // in two-pane mode.
             mTwoPane = true;
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
             if (savedInstanceState == null) {
                 getFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new DetailsFragment(), DETAILFRAGMENT_TAG)
@@ -53,12 +51,7 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
             }
         } else {
             mTwoPane = false;
-            //getFragmentManager().get
         }
-
-        PopularMoviesFragment poulareFragment1 = ((PopularMoviesFragment) getFragmentManager()
-                .findFragmentById(R.id.movies_container));
-
     }
 
     @Override
@@ -70,19 +63,10 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-//steps call async class & excute
             Intent settingIntent = new Intent(this, SettingsActivity.class);
             settingIntent.putExtra(Intent.EXTRA_TEXT, "settings");
-            // downloadIntent.setData(Uri.parse(fileUrl));
             startActivity(settingIntent);
             return true;
         }
@@ -92,38 +76,48 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
     @Override
     protected void onResume() {
         super.onResume();
-        PopularMoviesFragment poulareFragment1 = ((PopularMoviesFragment) getFragmentManager()
-                .findFragmentById(R.id.movies_container));
-        if (null != poulareFragment1) {
-            poulareFragment1.getMoviesDtoAndGetSortKeyFromSharedPreferences();
+        this.resumePopularMoviesFragment();
+        this.resumeDetailFragment();
+    }
 
-        }
+    private void resumeDetailFragment() {
         DetailsFragment df = (DetailsFragment) getFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-
         if (null != df) {
             df.loadMovieDetail();
+        }
+    }
+
+    private void resumePopularMoviesFragment() {
+        PopularMoviesFragment popularMoviesFragment = ((PopularMoviesFragment) getFragmentManager()
+                .findFragmentById(R.id.movies_container));
+        if (null != popularMoviesFragment) {
+            popularMoviesFragment.getMoviesDtoAndGetSortKeyFromSharedPreferences();
 
         }
-
-
     }
 
     @Override
     public void onItemSelected(MovieDTO movieDTO) {
         if (mTwoPane) {
             Log.i(LOG_TAG, "onItemSelected");
-            DetailsFragment fragment = new DetailsFragment();
-            fragment.setMovieDto(movieDTO);
-            //  fragment.setViewVisible();
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
-                    .commit();
-
-
+            this.showMovieDetailFragmentIn(movieDTO);
         } else {
-            Intent detailIntent = new Intent(this, DetailsActivity.class);
-            detailIntent.putExtra(movieDTO.MOVIE_DETAIL_INTENT_KEY, movieDTO);
-            startActivity(detailIntent);
+            this.startDetailActivityUsingIntent(movieDTO);
         }
     }
+
+    private void startDetailActivityUsingIntent(MovieDTO movieDTO) {
+        Intent detailIntent = new Intent(this, DetailsActivity.class);
+        detailIntent.putExtra(movieDTO.MOVIE_DETAIL_INTENT_KEY, movieDTO);
+        startActivity(detailIntent);
+    }
+
+    private void showMovieDetailFragmentIn(MovieDTO movieDTO) {
+        DetailsFragment fragment = new DetailsFragment();
+        fragment.setMovieDto(movieDTO);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
+                .commit();
+    }
+
 }

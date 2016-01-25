@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_horizontal"
+
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/imgMovie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:minHeight="277dp"
+        android:minWidth="185dp" ></ImageView>
+
+    <!--<Button-->
+    <!--android:id="@+id/btnFavouriteMovie_in_list"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="0dp"-->
+    <!--android:visibility="visible" />-->
+
+    <TextView
+        android:id="@+id/txtMovieTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="-30dp"
+        android:gravity="center_vertical"
+        android:visibility="visible"></TextView>
+</LinearLayout>
