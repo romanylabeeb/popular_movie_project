@@ -51,17 +51,17 @@
 
             <ImageView
                 android:id="@+id/imgBackMovieDetail"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="277dp"
-                android:minWidth="185dp"  />
+                android:minWidth="185dp" />
 
             <Button
                 android:id="@+id/btnFavouriteMovie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#ffffff"
+                android:layout_gravity="bottom"
                 android:visibility="invisible" />
         </LinearLayout>
 
@@ -137,6 +137,7 @@
                 android:rating="2"
                 android:stepSize="0" />
 
+
             <TextView
                 android:id="@+id/txtOverViewMovieDetail"
                 android:layout_width="match_parent"
@@ -200,7 +201,6 @@
                 android:scrollbars="none"></app.movie.android.com.popularmovie.customizelist.ExpandableHeightListView>
 
         </LinearLayout>
-
 
     </RelativeLayout>
 </ScrollView>

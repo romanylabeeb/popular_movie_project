@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -123,7 +124,7 @@ public class DetailsFragment extends Fragment {
                     MainActivity.movieDBHelper.deleteFavouriteMovie(movieDetail.getId());
                     movieDetail.setFavorite(0);
                 }
-                PopularMoviesFragment.notifyChangeMovieFavoriteStatus(movieDetail,movieDetail.isFavorite());
+                PopularMoviesFragment.notifyChangeMovieFavoriteStatus(movieDetail, movieDetail.isFavorite());
                 validateFavouriteButton(movieDetail.getId(), btnFavourite);
             }
         });
@@ -147,7 +148,7 @@ public class DetailsFragment extends Fragment {
         this.loadExternalMovieDetails(btnFavourite);
         this.validateFavouriteButton(this.movieDetail.getId(), btnFavourite);
         this.loadMovieBasicDetails();
-     //   this.movieDetail.setFavorite(MainActivity.movieDBHelper.isFavouriteMovie(this.movieDetail.getId()) ? 1 : 0);
+        //   this.movieDetail.setFavorite(MainActivity.movieDBHelper.isFavouriteMovie(this.movieDetail.getId()) ? 1 : 0);
     }
 
     private ExpandableHeightListView initiateDetailListView(View rootView, MovieBaseAdapter adapter, int listViewId) {
@@ -214,14 +215,6 @@ public class DetailsFragment extends Fragment {
 
     }
 
-    public static void showDefaultMovieDetailIfNoMovieIsShown(MovieDTO movieDTO) {
-        if (null == movieDTO) {
-            Log.i(LOG_TAG, "here movie is null");
-            movieDetail = movieDTO;
-            PopularMoviesFragment.notifyGridViewAndAdapter();
 
-        }
-
-    }
 }
 

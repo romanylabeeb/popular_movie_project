@@ -27,42 +27,61 @@
             android:textStyle="bold"></TextView>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/linearLayoutImages"
+            android:id="@+id/mainlinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/txtOriginalTitleMovieDetail"
             android:background="#ff33b5e5"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:paddingLeft="5dp"
             android:paddingRight="5dp">
 
-
-
-            <ImageView
-                android:id="@+id/imgMovieDetail"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/linearLayoutImages"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
-                android:minHeight="170dp"
-                android:minWidth="150dp" />
-            <ImageView
-                android:id="@+id/imgBackMovieDetail"
 
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/imgMovieDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:minHeight="170dp"
+                    android:minWidth="150dp" />
+
+                <ImageView
+                    android:id="@+id/imgBackMovieDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="170dp"
+                    android:minWidth="150dp" />
+
+                <Button
+                    android:id="@+id/btnFavouriteMovie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="#ffffff"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/detaillinearLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="170dp"
-                android:minWidth="150dp" />
-
-            <Button
-                android:id="@+id/btnFavouriteMovie"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:visibility="invisible" />
+                android:layout_below="@+id/txtOriginalTitleMovieDetail"
+                android:background="#ff33b5e5"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"></LinearLayout>
         </LinearLayout>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -71,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/linearLayoutImages"
+            android:layout_below="@+id/mainlinearLayout"
             android:layout_centerVertical="true"
             android:background="#ff33b5e5"
             android:gravity="center_vertical"
@@ -98,7 +117,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-
                 android:inputType="date"
                 android:paddingLeft="13dp"
                 android:paddingRight="15dp"
@@ -130,10 +148,10 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_gravity="left"
+                android:backgroundTint="#afa016"
                 android:isIndicator="true"
                 android:numStars="10"
                 android:progressTint="#afa016"
-                android:backgroundTint="#afa016"
                 android:rating="2"
                 android:stepSize="0" />
 
@@ -200,7 +218,6 @@
                 android:scrollbars="none"></app.movie.android.com.popularmovie.customizelist.ExpandableHeightListView>
 
         </LinearLayout>
-
 
     </RelativeLayout>
 </ScrollView>

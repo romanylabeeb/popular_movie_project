@@ -1,5 +1,7 @@
 package app.movie.android.com.popularmovie.model;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -15,7 +17,7 @@ public class MoviesDTO implements Serializable {
     public static final String JSON_MOVIES_RESULTS = "results";
     public static final String JSON_MOVIES_PAGE = "page";
     public static final String JSON_MOVIES_TOTAL_PAGES = "total_pages";
-    public static final int VISIBLE_THRESHOLD = 8;
+    public static final int VISIBLE_THRESHOLD = 9;
     @SerializedName(JSON_MOVIES_PAGE)
     private int page;
     @SerializedName(JSON_MOVIES_RESULTS)
@@ -75,11 +77,9 @@ public class MoviesDTO implements Serializable {
         for (MovieDTO movie : moviesDTO.getMovies()) {
             if (MainActivity.movieDBHelper.isFavouriteMovie(movie.getId())) {
                 movie.setFavorite(1);
-
             }
             this.movies.add(movie);
         }
-
         this.waitingResponse = false;
     }
 
@@ -87,7 +87,18 @@ public class MoviesDTO implements Serializable {
         this.waitingResponse = waitingResponse;
     }
 
+    public void setNextPage(int nextPage) {
+        this.nextPage = nextPage;
+    }
+
     public boolean isNeedSendRequest(int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         return (!this.loadFromDataBase && !waitingResponse && (totalItemCount - visibleItemCount) < (firstVisibleItem + VISIBLE_THRESHOLD));
+    }
+
+    public void clearAllData() {
+        this.movies.clear();
+        this.page = 1;
+        this.nextPage = 1;
+        this.totalPages = 1;
     }
 }

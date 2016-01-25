@@ -35,7 +35,6 @@ public class RequestHandler {
 
     public static String getUrlForMoviesListBySortKeyAndPageNumber(String sortKey, String pageNumber) {
         Uri buildURL = Uri.parse(BASE_URL).buildUpon().appendQueryParameter(PAGE_PARAM, pageNumber).appendQueryParameter(SORTED_BY_PARAM, sortKey).appendQueryParameter(API_KEY_PARAM, APPID).build();
-        System.out.println("current url=" + buildURL.toString());
         return buildURL.toString();
     }
 

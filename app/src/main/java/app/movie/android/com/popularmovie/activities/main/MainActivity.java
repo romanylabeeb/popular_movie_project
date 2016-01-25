@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import app.movie.android.com.popularmovie.R;
 import app.movie.android.com.popularmovie.activities.details.DetailsActivity;
@@ -18,10 +20,11 @@ import app.movie.android.com.popularmovie.model.MovieDTO;
 public class MainActivity extends Activity implements PopularMoviesFragment.Callback {
     public static MovieDbHelper movieDBHelper;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
-
+    private int rotation;
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     private static boolean mTwoPane;
     private static Context context;
+    private static final String SAVED_SORT_KEY = "SORT_KEY";
 
     public static boolean ismTwoPane() {
         return mTwoPane;
@@ -33,10 +36,19 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        context = this;
+        Log.i(LOG_TAG, "in onCreate main");
         super.onCreate(savedInstanceState);
-        movieDBHelper = new MovieDbHelper(getApplicationContext());
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            PopularMoviesFragment.SORT_KEY = savedInstanceState.getString(SAVED_SORT_KEY);
+            Log.i(LOG_TAG, "in onCreate saved SORT_KEY=" + PopularMoviesFragment.SORT_KEY);
+        }
+
+        context = this;
         setContentView(R.layout.activity_main);
+        movieDBHelper = new MovieDbHelper(getApplicationContext());
+
 //        Picasso
 //                .with(this)
 //                .setIndicatorsEnabled(true);
@@ -53,6 +65,7 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
             mTwoPane = false;
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,10 +88,23 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
 
     @Override
     protected void onResume() {
-        super.onResume();
+        Log.i(LOG_TAG, "in onResume main");
+        Log.i(LOG_TAG, "in onResume  SORT_KEY=" + PopularMoviesFragment.SORT_KEY);
         this.resumePopularMoviesFragment();
         this.resumeDetailFragment();
+        super.onResume();
+
+
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, " onSaveInstanceState Pop fragment");
+        Log.i(LOG_TAG, "in onSaveInstanceState  SORT_KEY=" + PopularMoviesFragment.SORT_KEY);
+        savedInstanceState.putString(SAVED_SORT_KEY, PopularMoviesFragment.SORT_KEY);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
 
     private void resumeDetailFragment() {
         DetailsFragment df = (DetailsFragment) getFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
@@ -88,6 +114,7 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
     }
 
     private void resumePopularMoviesFragment() {
+        Log.i(LOG_TAG, "in resumePopularMoviesFragment");
         PopularMoviesFragment popularMoviesFragment = ((PopularMoviesFragment) getFragmentManager()
                 .findFragmentById(R.id.movies_container));
         if (null != popularMoviesFragment) {

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,20 +31,28 @@ public class PopularMoviesFragment extends Fragment {
     public static final String LOG_TAG = PopularMoviesFragment.class.getSimpleName();
     private static MoviesAdapter moviesAdapter;
     private static MoviesDTO moviesDTO;
-    private static String SORT_KEY = "";
+
     private static String FAVORITE_KEY = "favorites";
     private TextView sortKeyTitle;
     private static GridView gridView;
+    public static String SORT_KEY;
+
+    private ProgressBar spinner;
 
     public void setSortKeyTitle(String sortKeyTitleStr) {
         if (sortKeyTitleStr.equalsIgnoreCase(FAVORITE_KEY)) {
-            sortKeyTitleStr = "Sort by Your Favorites Movies";
+            sortKeyTitleStr = "Favorites Movies";
         } else if (sortKeyTitleStr.equalsIgnoreCase(getString(R.string.pref_most_popular_value))) {
-            sortKeyTitleStr = "Sort by Your Most Populare Movies";
+            sortKeyTitleStr = "Most Popular Movies";
         } else if (sortKeyTitleStr.equalsIgnoreCase(getString(R.string.pref_highest_rated_value))) {
-            sortKeyTitleStr = "Sort by Your Most Highest Rated Movies";
+            sortKeyTitleStr = "Highest Rated Movies";
         }
         this.sortKeyTitle.setText(sortKeyTitleStr);
+    }
+
+    public void resetMoviesList() {
+        if (null != moviesDTO)
+            moviesDTO.setNextPage(moviesDTO.getPage());
     }
 
     /**
@@ -58,7 +67,6 @@ public class PopularMoviesFragment extends Fragment {
         public void onItemSelected(MovieDTO movieDTO);
     }
 
-    //public static String SORT_KEY;
     public PopularMoviesFragment() {
 
     }
@@ -66,15 +74,10 @@ public class PopularMoviesFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         // getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Add this line in order for this fragment to handle menu events.
-        setHasOptionsMenu(true);
-    }
 
     public static void notifyChangeMovieFavoriteStatus(MovieDTO movieDetail, boolean isFavorite) {
         showToastForMovieStatus(movieDetail.getTitle(), movieDetail.isFavorite());
@@ -109,9 +112,9 @@ public class PopularMoviesFragment extends Fragment {
 
     private static void changeMovieStatusInAdapter(MovieDTO movieDetail, boolean isFavorite) {
         int favoriteStatus = (isFavorite ? 1 : 0);
-        moviesAdapter.setNotifyOnChange(true);
-        gridView.setAdapter(moviesAdapter);
+
         movieDetail.setFavorite(favoriteStatus);
+        notifyGridViewAndAdapter();
     }
 
     private static void removeOrAddMovieToAdapterByNewStatus(MovieDTO movieDetail, int selectedMovieIndex) {
@@ -132,17 +135,23 @@ public class PopularMoviesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        GridView gridView = this.getGridViewByRootView(rootView);
+        spinner = (ProgressBar) rootView.findViewById(R.id.movie_spinner);
+
+        gridView = this.getGridViewByRootView(rootView);
+
         sortKeyTitle = (TextView) rootView.findViewById(R.id.txtSortKey);
         return rootView;
     }
 
     private GridView getGridViewByRootView(View rootView) {
-        moviesAdapter =
-                new MoviesAdapter(
-                        getActivity(),
-                        R.layout.list_movies, new ArrayList<Object>());
+        if (null == moviesAdapter) {
+            moviesAdapter =
+                    new MoviesAdapter(
+                            getActivity(),
+                            R.layout.list_movies, new ArrayList<Object>());
+        }
         gridView = (GridView) rootView.findViewById(R.id.list_view_movies);
         gridView.setAdapter(moviesAdapter);
         //add action listener for selected  item
@@ -177,32 +186,36 @@ public class PopularMoviesFragment extends Fragment {
 
     public void getMoviesDtoAndGetSortKeyFromSharedPreferences() {
         Log.i(LOG_TAG, "on getMoviesDtoAndGetSortKeyFromSharedPreferences");
+        boolean loadAtFirstTime = false;
         if (null == this.moviesDTO) {
+            Log.i(LOG_TAG, "on moviesDTO==null");
             this.moviesDTO = new MoviesDTO();
+
         }
 
         String newSortKey = Utility.getSortKey(getActivity());
         this.setSortKeyTitle(newSortKey);
-        if (!this.SORT_KEY.equalsIgnoreCase(newSortKey)) {
-            this.SORT_KEY = newSortKey;
-            this.moviesDTO.getMovies().clear();
+        Log.i(LOG_TAG, "ssort newSortKey=" + newSortKey);
+
+        if (null == SORT_KEY || !SORT_KEY.equalsIgnoreCase(newSortKey)) {
+            Log.i(LOG_TAG, "old sort key=" + SORT_KEY);
+            SORT_KEY = newSortKey;
+            this.moviesDTO.clearAllData();
             this.moviesDTO.initDefaultInstanceValues();
-            if (!this.SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
+            if (!SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
                 loadPopularMovies();
             }
         }
-        if (this.SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
+        if (SORT_KEY.equalsIgnoreCase(FAVORITE_KEY)) {
             this.loadDataFromDataBase();
         }
-
-
     }
 
     private void loadPopularMovies() {
         Log.i(LOG_TAG, "on loadPopularMovies");
         //steps call async class & execute
         moviesDTO.setWaitingResponse(true);
-        BaseFetchMovieTask movieTask = new FetchMoviesTask(SORT_KEY, Integer.toString(moviesDTO.getNextPage()), moviesAdapter, moviesDTO);
+        BaseFetchMovieTask movieTask = new FetchMoviesTask(spinner, SORT_KEY, Integer.toString(moviesDTO.getNextPage()), moviesAdapter, moviesDTO);
         movieTask.execute();
     }
 
@@ -234,6 +247,7 @@ public class PopularMoviesFragment extends Fragment {
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem,
                              int visibleItemCount, int totalItemCount) {
+            Log.i(LOG_TAG, "onscroll");
             if (null != moviesDTO && moviesDTO.isNeedSendRequest(firstVisibleItem, visibleItemCount, totalItemCount)) {
                 loadPopularMovies();
             }

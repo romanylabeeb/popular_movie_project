@@ -25,14 +25,14 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="fill_horizontal"
             android:textColor="@android:color/white"
-            android:textSize="35sp"
+            android:textSize="25sp"
             android:textStyle="bold"></TextView>
 
         <GridView
             android:id="@+id/list_view_movies"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_horizontal|top"
             android:background="#33b5e5"
             android:columnWidth="120dp"
             android:gravity="center"
@@ -42,4 +42,15 @@
             android:stretchMode="columnWidth"
             android:verticalSpacing="5dp" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/movie_spinner"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@drawable/spinner"
+
+        android:visibility="visible" />
 </FrameLayout>

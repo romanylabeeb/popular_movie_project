@@ -1,7 +1,10 @@
 package app.movie.android.com.popularmovie.asynctasks;
 
+
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
@@ -33,14 +36,16 @@ public abstract class BaseFetchMovieTask extends AsyncTask<String, Void, List<?>
     @Override
     protected List<?> doInBackground(String... params) {
         String jsonResponse = this.appConnection.getResponseByUrl(this.url);
-        // String jsonResponse = "";
+
         try {
             if (null != jsonResponse) {
                 System.out.println("url=:" + this.url);
                 return this.getResultListByMapJsonToObjectDto(jsonResponse);
             } else {
                 Log.e(LOG_TAG, "Error no connection");
-                // return this.getResultListByMapJsonToObjectDto("");
+                //TODO
+                //unComment for Test on device or emulator (with no network)
+                //return this.getResultListByMapJsonToObjectDto("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -62,6 +67,7 @@ public abstract class BaseFetchMovieTask extends AsyncTask<String, Void, List<?>
 
         }
 
+
     }
 
     protected abstract List<?> getResultListByMapJsonToObjectDto(String jsonResponse) throws JSONException;
@@ -70,4 +76,6 @@ public abstract class BaseFetchMovieTask extends AsyncTask<String, Void, List<?>
         JSONObject responseJsonObject = new JSONObject(jsonResponse);
         return responseJsonObject.getJSONArray(JSON_ARRAY_RESULTS).toString();
     }
+
+
 }
