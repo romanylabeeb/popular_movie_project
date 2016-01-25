@@ -21,7 +21,7 @@ public class DetailsActivity extends Activity {
         if (savedInstanceState == null) {
             Intent movieDetailIntent = this.getIntent();
             DetailsFragment df = new DetailsFragment();
-            df.setMovieDto((MovieDTO) movieDetailIntent.getSerializableExtra(MovieDTO.MOVIE_DETAIL_INTENT_KEY));
+            df.setMovieDto((MovieDTO) movieDetailIntent.getParcelableExtra(MovieDTO.MOVIE_DETAIL_INTENT_KEY));
             getFragmentManager().beginTransaction()
                     .add(R.id.movie_detail_container, df)
                     .commit();

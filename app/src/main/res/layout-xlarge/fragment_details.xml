@@ -60,8 +60,8 @@
                 android:id="@+id/btnFavouriteMovie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#ffffff"
                 android:layout_gravity="bottom"
+                android:background="#ffffff"
                 android:visibility="invisible" />
         </LinearLayout>
 
@@ -186,13 +186,6 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp">
 
-            <!--<ListView
-                android:id="@+id/list_review_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="300dp"
-                android:minWidth="200dp"
-                android:scrollbars="none" />-->
             <app.movie.android.com.popularmovie.customizelist.ExpandableHeightListView
                 android:id="@+id/list_review_id"
                 android:layout_width="match_parent"
@@ -202,5 +195,11 @@
 
         </LinearLayout>
 
+        <VideoView
+            android:id="@+id/video_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
     </RelativeLayout>
 </ScrollView>

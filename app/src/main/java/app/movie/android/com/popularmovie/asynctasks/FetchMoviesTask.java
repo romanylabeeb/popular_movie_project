@@ -116,8 +116,7 @@ public class FetchMoviesTask extends BaseFetchMovieTask {
 
     @Override
     protected void onPostExecute(List<?> results) {
-        super.onPostExecute(results);
         spinner.setVisibility(View.GONE);
-
+        super.onPostExecute(results);
     }
 }

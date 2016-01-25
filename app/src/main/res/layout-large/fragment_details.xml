@@ -60,8 +60,8 @@
                 android:id="@+id/btnFavouriteMovie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#ffffff"
                 android:layout_gravity="bottom"
+                android:background="#ffffff"
                 android:visibility="invisible" />
         </LinearLayout>
 
@@ -202,5 +202,11 @@
 
         </LinearLayout>
 
+        <VideoView
+            android:id="@+id/video_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
     </RelativeLayout>
 </ScrollView>

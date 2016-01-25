@@ -37,7 +37,9 @@ public class MoviesAdapter extends MovieBaseAdapter {
         MovieDTO movie = (MovieDTO) dto;
         // movieHolder.txtMovieTitle.setText(movie.getTitle());
         Picasso.with(context).load(movie.getPosterImagePath())
-                .fit() // will explain later
+                .fit()
+                .placeholder(R.drawable.movie_placeholder)
+                .error(R.drawable.movie_placeholder_error)
                 .into(movieHolder.imgMovie);
         if (movie.isFavorite()) {
             movieHolder.txtMovieTitle.setBackgroundResource(R.drawable.remove);

@@ -6,6 +6,7 @@ package app.movie.android.com.popularmovie.activities.details;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,9 +21,11 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import app.movie.android.com.popularmovie.R;
@@ -54,6 +57,7 @@ public class DetailsFragment extends Fragment {
     private RatingBar rating;
     private ScrollView scrollView;
     private View rootView;
+    private VideoView videoView;
 
     public DetailsFragment() {
     }
@@ -87,6 +91,7 @@ public class DetailsFragment extends Fragment {
 
     private void initDetailView(View rootView) {
         this.initiateDetailAdapters();
+        videoView = (VideoView) rootView.findViewById(R.id.video_view);
         btnFavourite = (Button) rootView.findViewById(R.id.btnFavouriteMovie);
         reviewListView = this.initiateDetailListView(rootView, movieReviewsAdapter, R.id.list_review_id);
         videoListView = initiateDetailListView(rootView, movieVideoAdapter, R.id.list_video_id);
@@ -137,7 +142,7 @@ public class DetailsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 MovieVideosDTO video = (MovieVideosDTO) movieVideoAdapter.getItem(position);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + video.getKey()));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + video.getKey()));
                 startActivity(intent);
             }
         });
@@ -189,8 +194,10 @@ public class DetailsFragment extends Fragment {
     }
 
     private void loadExternalDataFromDataBase() {
-        this.movieDetail.setMovieReviews(MainActivity.movieDBHelper.getFavoriteMovieReviewsList(this.movieDetail.getId()));
-        this.movieDetail.setMovieVideos(MainActivity.movieDBHelper.getFavoriteMovieVideosList(this.movieDetail.getId()));
+        if (null == this.movieDetail.getMovieReviews() || this.movieDetail.getMovieReviews().isEmpty()) {
+            this.movieDetail.setMovieReviews(MainActivity.movieDBHelper.getFavoriteMovieReviewsList(this.movieDetail.getId()));
+            this.movieDetail.setMovieVideos(MainActivity.movieDBHelper.getFavoriteMovieVideosList(this.movieDetail.getId()));
+        }
         this.movieVideoAdapter.clear();
         this.movieVideoAdapter.addAll(this.movieDetail.getMovieVideos());
         this.movieReviewsAdapter.clear();
@@ -211,6 +218,8 @@ public class DetailsFragment extends Fragment {
     private void loadImage(final ImageView imgView, String imgUrl) {
         Picasso.with(getActivity()).load(imgUrl)
                 .fit()
+                .placeholder(R.drawable.movie_placeholder)
+                .error(R.drawable.movie_placeholder_error)
                 .into(imgView);
 
     }

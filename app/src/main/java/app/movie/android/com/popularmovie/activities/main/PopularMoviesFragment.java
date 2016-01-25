@@ -138,7 +138,7 @@ public class PopularMoviesFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         spinner = (ProgressBar) rootView.findViewById(R.id.movie_spinner);
-
+        spinner.setVisibility(View.GONE);
         gridView = this.getGridViewByRootView(rootView);
 
         sortKeyTitle = (TextView) rootView.findViewById(R.id.txtSortKey);
