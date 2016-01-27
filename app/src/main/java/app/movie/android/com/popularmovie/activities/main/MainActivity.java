@@ -3,6 +3,8 @@ package app.movie.android.com.popularmovie.activities.main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -14,6 +16,7 @@ import app.movie.android.com.popularmovie.R;
 import app.movie.android.com.popularmovie.activities.details.DetailsActivity;
 import app.movie.android.com.popularmovie.activities.details.DetailsFragment;
 import app.movie.android.com.popularmovie.activities.settings.SettingsActivity;
+import app.movie.android.com.popularmovie.data.MovieContract;
 import app.movie.android.com.popularmovie.data.MovieDbHelper;
 import app.movie.android.com.popularmovie.model.MovieDTO;
 
@@ -89,12 +92,16 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
     @Override
     protected void onResume() {
         Log.i(LOG_TAG, "in onResume main");
-        Log.i(LOG_TAG, "in onResume  SORT_KEY=" + PopularMoviesFragment.SORT_KEY);
         this.resumePopularMoviesFragment();
         this.resumeDetailFragment();
         super.onResume();
 
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -146,5 +153,6 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
                 .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
                 .commit();
     }
+
 
 }

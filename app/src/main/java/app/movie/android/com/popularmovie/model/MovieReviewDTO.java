@@ -1,6 +1,9 @@
 package app.movie.android.com.popularmovie.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -8,8 +11,8 @@ import java.io.Serializable;
 /**
  * Created by Romany on 12/25/2015.
  */
-@SuppressWarnings("serial")
-public class MovieReviewDTO implements Serializable {
+
+public class MovieReviewDTO implements Parcelable {
 
     public static final String JSON_REVIEW_ID = "id";
     public static final String JSON_REVIEW_AUTHOR = "author";
@@ -25,6 +28,7 @@ public class MovieReviewDTO implements Serializable {
     public MovieReviewDTO() {
 
     }
+
 
     public String getAuthor() {
         return author;
@@ -57,4 +61,44 @@ public class MovieReviewDTO implements Serializable {
     public void setMovieId(int movieId) {
         this.movieId = movieId;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(movieId);
+        dest.writeString(id);
+        dest.writeString(content);
+        dest.writeString(author);
+    }
+
+    public MovieReviewDTO(Parcel in) {
+        movieId=in.readInt();
+        id=in.readString();
+        content=in.readString();
+        author=in.readString();
+    }
+
+    // After implementing the `Parcelable` interface, we need to create the
+    // `Parcelable.Creator<MyParcelable> CREATOR` constant for our class;
+    // Notice how it has our class specified as its type.
+    public static final Parcelable.Creator<MovieReviewDTO> CREATOR
+            = new Parcelable.Creator<MovieReviewDTO>() {
+
+        // This simply calls our new constructor (typically private) and
+        // passes along the unmarshalled `Parcel`, and then returns the new object!
+        @Override
+        public MovieReviewDTO createFromParcel(Parcel in) {
+            return new MovieReviewDTO(in);
+        }
+
+        // We just need to copy this and change the type to match our class.
+        @Override
+        public MovieReviewDTO[] newArray(int size) {
+            return new MovieReviewDTO[size];
+        }
+    };
 }

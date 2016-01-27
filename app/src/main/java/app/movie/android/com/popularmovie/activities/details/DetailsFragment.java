@@ -6,30 +6,31 @@ package app.movie.android.com.popularmovie.activities.details;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import app.movie.android.com.popularmovie.R;
-import app.movie.android.com.popularmovie.activities.main.MainActivity;
 import app.movie.android.com.popularmovie.activities.main.PopularMoviesFragment;
 import app.movie.android.com.popularmovie.asynctasks.BaseFetchMovieTask;
 import app.movie.android.com.popularmovie.asynctasks.FetchMovieReviewsTask;
@@ -38,6 +39,7 @@ import app.movie.android.com.popularmovie.customizedadapter.MovieBaseAdapter;
 import app.movie.android.com.popularmovie.customizedadapter.MovieReviewAdapter;
 import app.movie.android.com.popularmovie.customizedadapter.MovieVideoAdapter;
 import app.movie.android.com.popularmovie.customizelist.ExpandableHeightListView;
+import app.movie.android.com.popularmovie.data.ContentProviderHelper;
 import app.movie.android.com.popularmovie.model.MovieDTO;
 import app.movie.android.com.popularmovie.model.MovieVideosDTO;
 
@@ -58,8 +60,17 @@ public class DetailsFragment extends Fragment {
     private ScrollView scrollView;
     private View rootView;
     private VideoView videoView;
+    public static final String MOVIE_SHARE_HASHTAG = " #MOVIE_APP";
+
+    private static ShareActionProvider mShareActionProvider;
 
     public DetailsFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     public static MovieDTO getMovieDetailDTO() {
@@ -80,9 +91,33 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.detailfragment, menu);
+        mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.share).getActionProvider();
+
+    }
+
+    public static void defineShareAction() {
+        if (null != mShareActionProvider) {
+            mShareActionProvider.setShareIntent(createShareTrailerIntent());
+        }
+    }
+
+    private static Intent createShareTrailerIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=" +
+                movieDetail.getMovieVideos().get(0).getKey() + MOVIE_SHARE_HASHTAG);
+        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, MOVIE_SHARE_HASHTAG);
+
+        return shareIntent;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "onCreateView");
+
         rootView = inflater.inflate(R.layout.fragment_details, container, false);
         this.initDetailView(rootView);
         loadMovieDetail();
@@ -109,7 +144,6 @@ public class DetailsFragment extends Fragment {
         Log.i(LOG_TAG, "loadMovieDetail");
         if (null != movieDetail) {
             scrollView.setVisibility(View.VISIBLE);
-            System.out.println("in details");
             this.showMovieDetail();
             this.handleVideoAction(videoListView);
 //for favourite button
@@ -123,10 +157,13 @@ public class DetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (!movieDetail.isFavorite()) {
-                    MainActivity.movieDBHelper.makeMovieAsFovourite(movieDetail);
+                    movieDetail.setFavorite(1);
+                    ContentProviderHelper.insertNewFavoriteMovie(getActivity().getContentResolver(), movieDetail);
+                    //MainActivity.movieDBHelper.makeMovieAsFovourite(movieDetail);
                     movieDetail.setFavorite(1);
                 } else {
-                    MainActivity.movieDBHelper.deleteFavouriteMovie(movieDetail.getId());
+                    ContentProviderHelper.deleteFavoriteMovie(getActivity().getContentResolver(), movieDetail.getId(),
+                            movieDetail.getMovieReviews().size(), movieDetail.getMovieVideos().size());
                     movieDetail.setFavorite(0);
                 }
                 PopularMoviesFragment.notifyChangeMovieFavoriteStatus(movieDetail, movieDetail.isFavorite());
@@ -153,7 +190,6 @@ public class DetailsFragment extends Fragment {
         this.loadExternalMovieDetails(btnFavourite);
         this.validateFavouriteButton(this.movieDetail.getId(), btnFavourite);
         this.loadMovieBasicDetails();
-        //   this.movieDetail.setFavorite(MainActivity.movieDBHelper.isFavouriteMovie(this.movieDetail.getId()) ? 1 : 0);
     }
 
     private ExpandableHeightListView initiateDetailListView(View rootView, MovieBaseAdapter adapter, int listViewId) {
@@ -168,12 +204,11 @@ public class DetailsFragment extends Fragment {
                 new MovieReviewAdapter(
                         getActivity(), R.layout.list_reviews, new ArrayList<Object>());
         movieVideoAdapter = new MovieVideoAdapter(getActivity(), R.layout.list_videos, new ArrayList<Object>());
-
     }
 
     private void validateFavouriteButton(int movieId, Button btnFavourite) {
-        boolean isFavouriteMovie = MainActivity.movieDBHelper.isFavouriteMovie(movieId);
-        if (!isFavouriteMovie) {
+
+        if (!movieDetail.isFavorite()) {
             btnFavourite.setBackgroundResource(R.drawable.add);
         } else {
             btnFavourite.setBackgroundResource(R.drawable.remove);
@@ -194,21 +229,26 @@ public class DetailsFragment extends Fragment {
     }
 
     private void loadExternalDataFromDataBase() {
+
+
         if (null == this.movieDetail.getMovieReviews() || this.movieDetail.getMovieReviews().isEmpty()) {
-            this.movieDetail.setMovieReviews(MainActivity.movieDBHelper.getFavoriteMovieReviewsList(this.movieDetail.getId()));
-            this.movieDetail.setMovieVideos(MainActivity.movieDBHelper.getFavoriteMovieVideosList(this.movieDetail.getId()));
+            this.loadTrailerAndReviewsUsingContentProvider();
         }
         this.movieVideoAdapter.clear();
         this.movieVideoAdapter.addAll(this.movieDetail.getMovieVideos());
         this.movieReviewsAdapter.clear();
         this.movieReviewsAdapter.addAll(this.movieDetail.getMovieReviews());
+        defineShareAction();
+    }
+
+    private void loadTrailerAndReviewsUsingContentProvider() {
+        this.movieDetail.setMovieReviews(ContentProviderHelper.getMovieReviewsById(getActivity().getContentResolver(), movieDetail.getId()));
+        this.movieDetail.setMovieVideos(ContentProviderHelper.getMovieTrailerById(getActivity().getContentResolver(), movieDetail.getId()));
     }
 
     private void loadMovieBasicDetails() {
-
         this.loadImage(poster, movieDetail.getPosterImagePath());
         this.loadImage(backGroundImg, movieDetail.getBackImagePath());
-
         title.setText(movieDetail.getTitle());
         overView.setText(movieDetail.getOverView());
         rating.setRating((float) movieDetail.getVoteRate() * 1.0f);
@@ -221,9 +261,6 @@ public class DetailsFragment extends Fragment {
                 .placeholder(R.drawable.movie_placeholder)
                 .error(R.drawable.movie_placeholder_error)
                 .into(imgView);
-
     }
-
-
 }
 

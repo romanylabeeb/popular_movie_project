@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "app.movie.android.com.java.popularmovie"
-        minSdkVersion 13
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -18,7 +18,7 @@ android {
         }
 
     }
-     buildTypes.each {
+    buildTypes.each {
         it.buildConfigField 'String', 'POULAR_MOVIE_API_KEY', '"21c3b2d7d354b627905deac9d7d37bb1"'
     }
 }

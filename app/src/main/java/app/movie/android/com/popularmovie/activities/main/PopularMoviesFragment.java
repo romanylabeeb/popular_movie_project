@@ -21,6 +21,7 @@ import app.movie.android.com.popularmovie.activities.details.DetailsFragment;
 import app.movie.android.com.popularmovie.asynctasks.BaseFetchMovieTask;
 import app.movie.android.com.popularmovie.asynctasks.FetchMoviesTask;
 import app.movie.android.com.popularmovie.customizedadapter.MoviesAdapter;
+import app.movie.android.com.popularmovie.data.ContentProviderHelper;
 import app.movie.android.com.popularmovie.model.MovieDTO;
 import app.movie.android.com.popularmovie.model.MoviesDTO;
 
@@ -55,6 +56,7 @@ public class PopularMoviesFragment extends Fragment {
             moviesDTO.setNextPage(moviesDTO.getPage());
     }
 
+
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -88,9 +90,6 @@ public class PopularMoviesFragment extends Fragment {
                     removeOrAddMovieToAdapterByNewStatus(movieDetail, i);
                     break;
                 } else {
-                    Log.i(LOG_TAG, "the old title=" + movie.getTitle());
-                    Log.i(LOG_TAG, "the old stat=" + isFavorite);
-
                     changeMovieStatusInAdapter(movie, isFavorite);
 
                 }
@@ -185,10 +184,8 @@ public class PopularMoviesFragment extends Fragment {
     }
 
     public void getMoviesDtoAndGetSortKeyFromSharedPreferences() {
-        Log.i(LOG_TAG, "on getMoviesDtoAndGetSortKeyFromSharedPreferences");
         boolean loadAtFirstTime = false;
         if (null == this.moviesDTO) {
-            Log.i(LOG_TAG, "on moviesDTO==null");
             this.moviesDTO = new MoviesDTO();
 
         }
@@ -219,15 +216,15 @@ public class PopularMoviesFragment extends Fragment {
         movieTask.execute();
     }
 
+
     private void loadDataFromDataBase() {
         this.moviesDTO.setLoadFromDataBase(true);
         Log.i(LOG_TAG, "on loadDataFromDataBase");
-        ArrayList<MovieDTO> result = MainActivity.movieDBHelper.getAllFavoriteMovies();
+        ArrayList<MovieDTO> result = ContentProviderHelper.getAllFavoriteMoviesAsList(MainActivity.getContext().getContentResolver());
         this.moviesDTO.setMovies(result);
         moviesAdapter.clear();
         moviesAdapter.addAll(result);
         reloadMovieDetailsFromAdapterByIndex(0);
-
     }
 
     private static void reloadMovieDetailsFromAdapterByIndex(int index) {

@@ -188,7 +188,8 @@ public class MovieDTO implements Parcelable {
         dest.writeInt(voteCount);
         dest.writeDouble(voteRate);
         dest.writeByte((byte) (favorite ? 1 : 0));
-        dest.writeArray(movieVideos.toArray());
+        dest.writeTypedList(movieReviews);
+        dest.writeTypedList(movieVideos);
 
     }
 

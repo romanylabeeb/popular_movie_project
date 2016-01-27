@@ -1,5 +1,6 @@
 package app.movie.android.com.popularmovie.asynctasks;
 
+import android.view.View;
 import android.widget.ProgressBar;
 
 import com.google.gson.reflect.TypeToken;
@@ -10,6 +11,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.movie.android.com.popularmovie.activities.details.DetailsFragment;
 import app.movie.android.com.popularmovie.connection.RequestHandler;
 import app.movie.android.com.popularmovie.customizedadapter.MovieBaseAdapter;
 import app.movie.android.com.popularmovie.model.MovieDTO;
@@ -127,5 +129,11 @@ public class FetchMovieVideosTask extends BaseFetchMovieTask {
         ArrayList<MovieVideosDTO> movieVideosList = (ArrayList<MovieVideosDTO>) GSON_MAPPER.fromJson(jsonArrayAsString, listType);
         movieDTO.setMovieVideos(movieVideosList);
         return movieDTO.getMovieVideos();
+    }
+
+    @Override
+    protected void onPostExecute(List<?> results) {
+        DetailsFragment.defineShareAction();
+        super.onPostExecute(results);
     }
 }

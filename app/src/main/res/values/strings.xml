@@ -20,15 +20,15 @@
     <string name="pref_most_popular_value" transable="false">popularity.desc</string>
     <string name="pref_highest_rated_value" transable="false">vote_average.desc</string>
     <string name="pref_default_sort_value" transable="false">@string/pref_most_popular_value</string>
-
-    <string-array name="pref_sort_list_options" >
-        <item name="pref_most_popular" >@string/pref_most_popular_option</item>
+    <string name="action_share">Share Trailer</string>
+    <string-array name="pref_sort_list_options">
+        <item name="pref_most_popular">@string/pref_most_popular_option</item>
         <item name="pref_highest_rated">@string/pref_highest_rated_option</item>
         <item name="pref_favorite">@string/pref_favorite_option</item>
     </string-array>
 
-    <string-array name="pref_sort_list_values" >
-        <item name="pref_most_popular" >@string/pref_most_popular_value</item>
+    <string-array name="pref_sort_list_values">
+        <item name="pref_most_popular">@string/pref_most_popular_value</item>
         <item name="pref_highest_rated">@string/pref_highest_rated_value</item>
         <item name="pref_favorite">@string/pref_favorite_option</item>
     </string-array>

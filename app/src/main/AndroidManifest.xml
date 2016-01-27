@@ -29,5 +29,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.settings.SettingsActivity" />
         </activity>
+
+        <provider
+            android:authorities="app.movie.android.com.popularmovie"
+            android:name=".data.MovieProvider" />
     </application>
 </manifest>
