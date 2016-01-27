@@ -51,11 +51,6 @@ public class PopularMoviesFragment extends Fragment {
         this.sortKeyTitle.setText(sortKeyTitleStr);
     }
 
-    public void resetMoviesList() {
-        if (null != moviesDTO)
-            moviesDTO.setNextPage(moviesDTO.getPage());
-    }
-
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -71,13 +66,6 @@ public class PopularMoviesFragment extends Fragment {
 
     public PopularMoviesFragment() {
 
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        // getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-
-        super.onActivityCreated(savedInstanceState);
     }
 
 

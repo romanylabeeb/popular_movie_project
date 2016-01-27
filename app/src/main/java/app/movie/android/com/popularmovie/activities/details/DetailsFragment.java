@@ -67,18 +67,20 @@ public class DetailsFragment extends Fragment {
     public DetailsFragment() {
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
+
     public static MovieDTO getMovieDetailDTO() {
         return movieDetail;
     }
 
     public void setMovieDto(MovieDTO movieDto) {
-        Log.i(LOG_TAG, "loadMovieDetail");
+        Log.i(LOG_TAG, "setMovieDto");
         this.movieDetail = movieDto;
     }
 
@@ -93,13 +95,18 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.detailfragment, menu);
-        mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.share).getActionProvider();
-
+        if (null == mShareActionProvider) {
+            mShareActionProvider = (ShareActionProvider) menu.findItem(R.id.share).getActionProvider();
+        }
+        loadMovieDetail();
     }
 
     public static void defineShareAction(String trailerKey) {
         if (null != mShareActionProvider) {
+            Log.i(LOG_TAG, "on define share intent");
             mShareActionProvider.setShareIntent(createShareTrailerIntent(trailerKey));
+        } else {
+            Log.i(LOG_TAG, "on  share intent==null");
         }
     }
 
@@ -118,7 +125,7 @@ public class DetailsFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_details, container, false);
         this.initDetailView(rootView);
-        loadMovieDetail();
+
         return rootView;
     }
 

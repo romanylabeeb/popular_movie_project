@@ -114,6 +114,7 @@ public class ContentProviderHelper {
                 } while (cursor.moveToNext());
             }
         }
+        Log.i(LOG_TAG, "tailer key=" + (favoriteMovieTrailerList.get(0)).getKey());
         DetailsFragment.defineShareAction((favoriteMovieTrailerList.get(0)).getKey());
         cursor.close();
         return favoriteMovieTrailerList;
