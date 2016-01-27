@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import app.movie.android.com.popularmovie.activities.details.DetailsFragment;
 import app.movie.android.com.popularmovie.model.MovieDTO;
 import app.movie.android.com.popularmovie.model.MovieReviewDTO;
 import app.movie.android.com.popularmovie.model.MovieVideosDTO;
@@ -113,6 +114,7 @@ public class ContentProviderHelper {
                 } while (cursor.moveToNext());
             }
         }
+        DetailsFragment.defineShareAction((favoriteMovieTrailerList.get(0)).getKey());
         cursor.close();
         return favoriteMovieTrailerList;
     }

@@ -133,7 +133,7 @@ public class FetchMovieVideosTask extends BaseFetchMovieTask {
 
     @Override
     protected void onPostExecute(List<?> results) {
-        DetailsFragment.defineShareAction();
+        DetailsFragment.defineShareAction(((MovieVideosDTO) results.get(0)).getKey());
         super.onPostExecute(results);
     }
 }

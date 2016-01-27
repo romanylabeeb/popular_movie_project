@@ -97,20 +97,18 @@ public class DetailsFragment extends Fragment {
 
     }
 
-    public static void defineShareAction() {
+    public static void defineShareAction(String trailerKey) {
         if (null != mShareActionProvider) {
-            mShareActionProvider.setShareIntent(createShareTrailerIntent());
+            mShareActionProvider.setShareIntent(createShareTrailerIntent(trailerKey));
         }
     }
 
-    private static Intent createShareTrailerIntent() {
+    private static Intent createShareTrailerIntent(String trailerKey) {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=" +
-                movieDetail.getMovieVideos().get(0).getKey() + MOVIE_SHARE_HASHTAG);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=" + trailerKey + MOVIE_SHARE_HASHTAG);
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, MOVIE_SHARE_HASHTAG);
-
         return shareIntent;
     }
 
@@ -238,7 +236,7 @@ public class DetailsFragment extends Fragment {
         this.movieVideoAdapter.addAll(this.movieDetail.getMovieVideos());
         this.movieReviewsAdapter.clear();
         this.movieReviewsAdapter.addAll(this.movieDetail.getMovieReviews());
-        defineShareAction();
+
     }
 
     private void loadTrailerAndReviewsUsingContentProvider() {

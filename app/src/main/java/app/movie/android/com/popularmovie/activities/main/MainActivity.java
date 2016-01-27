@@ -92,9 +92,9 @@ public class MainActivity extends Activity implements PopularMoviesFragment.Call
     @Override
     protected void onResume() {
         Log.i(LOG_TAG, "in onResume main");
+        super.onResume();
         this.resumePopularMoviesFragment();
         this.resumeDetailFragment();
-        super.onResume();
 
 
     }
